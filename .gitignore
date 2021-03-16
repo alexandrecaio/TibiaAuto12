@@ -27,3 +27,8 @@ var/
 .idea/
 .vscode/
 venv
+
+# Scripts Folder
+Scripts/GUILoader.json
+Scripts/Loads.json
+Scripts/NewConfig.json

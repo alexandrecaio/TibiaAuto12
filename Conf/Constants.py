@@ -150,6 +150,9 @@ Monsters = [
     "Rotworm",
     "AnyCorym",
     "CorymCharlatan",
+    "CarrionWorm",
+    "StoneGolem",
+    "EarthElemental",
     "CorymSkirmisher",
     "CorymVanguard",
     "Stonerefiner"
