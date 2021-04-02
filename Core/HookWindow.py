@@ -151,7 +151,20 @@ def LocateImage(image, Region=None, Precision=0.8):
         return Position[0], Position[1]
     return 0, 0
 
+def LocateRgbImage(image, Region=None, Precision=0.8):
+    TakedImage = TakeImage(Region)
 
+    img_rgb = np.array(TakedImage)
+    '''img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    '''
+    template = cv2.imread(image, 0)
+    
+    res = cv2.matchTemplate(img_rgb[:,:,0], template, cv2.TM_CCOEFF_NORMED )
+    #res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+    min_val, LocatedPrecision, min_loc, Position = cv2.minMaxLoc(res)
+    if LocatedPrecision > Precision:
+        return Position[0], Position[1]
+    return 0, 0
 '''
     In LocateCenterImage, It Compare With Another Image, If The Two Have Any
     Similarity To Each Other.

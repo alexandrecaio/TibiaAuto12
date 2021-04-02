@@ -1,6 +1,10 @@
 import json
 import ctypes
 import ctypes.wintypes
+###CAIO 
+import win32gui
+import win32api
+import win32con
 
 from Conf.HexMapKeys import KeyToHex
 
@@ -60,10 +64,20 @@ class MoveMouse:
         self.DLL.SetCursorPos(X, Y + 24)
 
     def DragTo(self, From, To):
+        ClientFrom = win32gui.ScreenToClient(self.HWND, From)
+        FromPosition = win32api.MAKELONG(ClientFrom[0], ClientFrom[1])
+        ClientTo = win32gui.ScreenToClient(self.HWND, To)
+        ToPosition = win32api.MAKELONG(ClientTo[0], ClientTo[1])
+        win32api.SendMessage(self.HWND, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, FromPosition)
+        win32api.SendMessage(self.HWND, win32con.WM_MOUSEMOVE, 0, ToPosition)
+        win32api.SendMessage(self.HWND, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, ToPosition)
+        '''        print("isThis??????")
         self.DLL.SetCursorPos(From[0], From[1])
         self.DLL.mouse_event(self.MOUSEEVENTF_LEFTDOWN, ctypes.c_long(From[0]), ctypes.c_long(From[1] + 24), 0, 0)
-        self.DLL.SetCursorPos(To[0], To[1] + 24)
+        #self.DLL.SetCursorPos(To[0], To[1] + 24)
+        self.DLL.mouse_event(self.MOUSEEVENTF_MOVE, ctypes.c_long(To[0]), ctypes.c_long(To[1] + 24), 0, 0)
         self.DLL.mouse_event(self.MOUSEEVENTF_LEFTUP, ctypes.c_long(To[0]), ctypes.c_long(To[1] + 24), 0, 0)
+        '''
 
     def UseOn(self, From, To):
         self.DLL.SetCursorPos(From[0], From[1] + 24)

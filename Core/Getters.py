@@ -1,4 +1,4 @@
-from Core.HookWindow import LocateCenterImage, LocateImage
+from Core.HookWindow import LocateRgbImage,LocateCenterImage, LocateImage
 
 BattlePositions = [0, 0, 0, 0]
 MapPositions = [0, 0, 0, 0]
@@ -46,8 +46,10 @@ def GetManaPosition():
 
 
 def GetMapPosition():
-    top_right = LocateImage("images/MapSettings/MapSettings.png", Precision=0.8)
+    top_right = LocateRgbImage("images/MapSettings/MapSettings.png", Precision=0.8)
     map_size = 110  # 110px square
+    print("Top Right Captured:")
+    print(top_right)
     MapPositions[0], MapPositions[1] = top_right[0] - map_size + 4, top_right[1] + 1
     MapPositions[2], MapPositions[3] = top_right[0] - 1, top_right[1] + map_size - 1
     if top_right[0] != -1:

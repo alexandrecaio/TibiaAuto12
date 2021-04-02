@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from Core.HookWindow import LocateAllImages, LocateCenterImage, LocateImage, TakeImage
+from Core.HookWindow import LocateAllImages, LocateCenterImage, LocateImage, LocateRgbImage, TakeImage
 
 
 def NumberOfTargets(BattlePosition, Monster):
@@ -31,11 +31,16 @@ def ScanTarget(BattlePosition, Monster):
 
 def CheckWaypoint(image, map_positions):
     wpt = [0, 0]
-    middle_start = (map_positions[0] + 48, map_positions[1] + 48)
+    middle_start = (map_positions[0] + 48 - 10, map_positions[1] + 48 ) # 23px added in AlexandreCaio Screen because Getters not recnoize the correct posiotion of map
     middle_end = (map_positions[2] - 48, map_positions[3] - 48)
+    #print("Map Positions:")
+    #print(map_positions)
 
-    wpt[0], wpt[1] = LocateImage('images/MapSettings/' + image + '.png', Precision=0.7, Region=(middle_start[0], middle_start[1], middle_end[0], middle_end[1]))
+    #print("middle_start:",middle_start,"  -- middle_end:",middle_end)
+    wpt[0], wpt[1] = LocateRgbImage('images/MapSettings/' + image + '.png', Precision=0.7, Region=(middle_start[0], middle_start[1], middle_end[0], middle_end[1]))
 
+    print("wpt[0]:",wpt[0],"  -- wpt[1]:",wpt[1])
+    
     if wpt[0] != 0 and wpt[1] != 0:
         print("Arrived At Mark:", image)
         return True
@@ -71,16 +76,28 @@ def IsAttacking(BattlePosition):
         BattlePosition[0], BattlePosition[1], BattlePosition[2], BattlePosition[3]))
 
     img_rgb = np.array(TakedImage)
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2HSV)
+    #img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 
     def ScannerAttack(image, Precision=0.8):
         template = cv2.imread(image, 0)
-
-        res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+        ''' 1-D Matching    
+        res = cv2.matchTemplate(img_rgb, template, cv2.TM_CCOEFF_NORMED)
+        ''' 
+        #3-D Matching
+        #res = cv2.matchTemplate(img_rgb[:,:,0], target[:,:,0], cv2.TM_SQDIFF_NORMED )
+        res = cv2.matchTemplate(img_rgb[:,:,0], template, cv2.TM_CCOEFF_NORMED )
+        '''
+        threshold = 0.00001
+        loc = np.where( res <= threshold )
+        img_rgb = img.copy()
+        for pt in zip(*loc[::-1]):
+            cv2.rectangle(img_rgb, pt, (pt[0] + 100, pt[1] + 100), (0,0,255), 2)
+        ''' 
         min_val, LocatedPrecision, min_loc, Position = cv2.minMaxLoc(res)
         if LocatedPrecision > Precision:
-            return True
-        return False
+            return False
+        return True
 
     for Image in ImagesAttacking:
         if ScannerAttack('images/MonstersAttack/' + Image + '.png'):

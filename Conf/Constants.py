@@ -142,6 +142,7 @@ Stats = [
 # Monsters For Select To Attack On CaveBot Module
 Monsters = [
     "Rat",
+    "Goblin",
     "CaveRat",
     "Orc",
     "OrcWarrior",

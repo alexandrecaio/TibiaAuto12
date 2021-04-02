@@ -1,0 +1,27 @@
+[
+    {
+        "mark": "CheckMark",
+        "type": 1,
+        "status": false
+    },
+    {
+        "mark": "Lock",
+        "type": 1,
+        "status": false
+    },
+    {
+        "mark": "Cross",
+        "type": 1,
+        "status": false
+    },
+    {
+        "mark": "Church",
+        "type": 1,
+        "status": false
+    },
+    {
+        "mark": "Skull",
+        "type": 1,
+        "status": true
+    }
+]

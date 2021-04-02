@@ -59,7 +59,7 @@ CavebotScriptsPath = None
 
 class root:
     def __init__(self, CharName, LoadedJson):
-        self.root = GUI('root', 'TibiaAuto V12')
+        self.root = GUI('root', 'Crocodile')
         self.root.MainWindow('Main', [357, 530], [2, 2.36])
 
         self.root.addMinimalLabel(f'Logged as: {CharName}', [14, 14])

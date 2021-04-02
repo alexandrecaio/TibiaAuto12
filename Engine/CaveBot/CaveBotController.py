@@ -2,8 +2,12 @@ import json
 from time import sleep, time
 
 from Conf.Hotkeys import Hotkey
-
-from Core.HookWindow import LocateCenterImage
+#MODULARIZAR MELHOR DEPOIS
+#from Core.HookWindow import LocateCenterImage
+from Core.HookWindow import LocateCenterImage, LocateRgbImage
+import cv2
+import numpy as np
+#FIM MODULARIZACAO
 from Engine.CaveBot.Scanners import NumberOfTargets, ScanTarget, IsAttacking, NeedFollow, CheckWaypoint
 
 TargetNumber = 0
@@ -227,7 +231,7 @@ class CaveBotController:
     '''
         Clicking Around Of The Player To Get A Loot.
     '''
-
+    '''
     def TakeLoot(self):
         if self.MOUSE_OPTION == 1:
             PastPosition = self.SendToClient.Position()
@@ -239,7 +243,9 @@ class CaveBotController:
 
         for i, j in zip(range(0, 18, + 2), range(1, 19, + 2)):
             if self.LootButton == 'right':
-                self.SendToClient.RightClick(self.SQMs[i], self.SQMs[j])
+                #self.SendToClient.RightClick(self.SQMs[i], self.SQMs[j])
+                self.SendToClient.RightClick(self.SQMs[i]-90, self.SQMs[j])
+                sleep(.3)
             elif self.LootButton == 'left':
                 self.SendToClient.LeftClick(self.SQMs[i], self.SQMs[j])
 
@@ -251,7 +257,94 @@ class CaveBotController:
 
         # For Debugging
         # print("Looted In: ", EndLootTime)
+    '''
+    def TakeLoot(self):
+        if self.MOUSE_OPTION == 1:
+            PastPosition = self.SendToClient.Position()
+        else:
+            PastPosition = [0, 0]
 
+        # For Debugging
+        # StartLootTime = time()
+
+        for i, j in zip(range(0, 18, + 2), range(1, 19, + 2)):
+            if self.LootButton == 'right':
+                #self.SendToClient.RightClick(self.SQMs[i], self.SQMs[j])
+                self.SendToClient.RightClick(self.SQMs[i]-90, self.SQMs[j])
+                sleep(.3)
+            elif self.LootButton == 'left':
+                self.SendToClient.LeftClick(self.SQMs[i], self.SQMs[j])
+
+        # For Debugging
+        # EndLootTime = time() - StartLootTime
+
+        if self.MOUSE_OPTION == 1:
+            self.SendToClient.MoveTo(PastPosition[0], PastPosition[1])
+
+        # For Debugging
+        # print("Looted In: ", EndLootTime)
+        #loc = pyautogui.locateOnScreen(bpname+".png") 'images/LootableItens/' + Image + '.png')
+        lootitems = ['SmallStone','SmallStone2','SmallStone3']
+        '''
+        pyautogui.moveTo(783, 320+32) #DEFAULT FULL SCREEN IS +23 - NOW I DID IT 32
+        pyautogui.click(button='right')
+        sleep(1)
+        pyautogui.moveTo(827, 316+32) #DEFAULT FULL SCREEN IS +23 - NOW I DID IT 32
+        pyautogui.click(button='right')
+        pyautogui.moveTo(827+500, 316+32) #DEFAULT FULL SCREEN IS +23 - NOW I DID IT 32
+        '''
+        '''
+        w.RightClick((453,280+32))
+        sleep(0.5)
+        w.RightClick((500,280))
+        sleep(0.5)
+        w.RightClick((544,280))
+        sleep(0.5)
+        w.RightClick((461,325))
+        sleep(0.5)
+        w.RightClick((462,362))
+        sleep(0.5)
+        w.RightClick((507,365))
+        sleep(0.5)
+        w.RightClick((544,368))
+        sleep(0.5)
+        w.RightClick((548,322))
+        sleep(1)
+        '''
+        #TakedImage = TakeImage(Region=(1739, 950, 1916, 1022))
+        #img_rgb = np.array(TakedImage)
+        #count = len(lootitems)
+        for image in lootitems:
+            wpt = [0, 0]
+            #template = cv2.imread('images/LootableItens/' + image + '.png', 0)
+            wpt[0], wpt[1] = LocateRgbImage('images/LootableItens/' + image + '.png', Precision=0.7, Region=(1739, 950, 1916, 1022))
+            #res = cv2.matchTemplate(img_rgb[:,:,0], template, cv2.TM_CCOEFF_NORMED )
+            '''
+            threshold = 0.00001
+            loc = np.where( res <= threshold )
+            img_rgb = img.copy()
+            for pt in zip(*loc[::-1]):
+                cv2.rectangle(img_rgb, pt, (pt[0] + 100, pt[1] + 100), (0,0,255), 2)
+            ''' 
+            if (wpt[0]!=0 and wpt[1]!= 0 ):
+                self.SendToClient.MoveTo(1739+wpt[0]+18,950+wpt[1]+15)
+                sleep(3)
+                self.SendToClient.MoveTo(1844,170)
+                sleep(3)
+                self.SendToClient.DragTo((1739+wpt[0]+18,15+950+wpt[1]),(1739+wpt[0]+18,15+850+wpt[1]))
+            
+            '''
+                self.SendToClient.MoveTo(1739+wpt[0],950+wpt[1])
+                sleep(3)
+                self.SendToClient.MoveTo(1844,170)
+                sleep(3)
+                self.SendToClient.DragTo((1739+wpt[0]+14,14+950+wpt[1]),(1844,120))
+            '''
+            #gold = pyautogui.locateAllOnScreen(lootitems[i]+'.png', confidence=.9, region=(1196,422, 1368, 726))
+            #for item in gold:
+            #    self.SendToClient.DragTo()
+            #    #w.MouseDrag((item.left,item.top),(loc.left,(loc.top+20)))
+            #    sleep(1)
 
 '''
     Import The EnabledCaveBot Variable From CaveBot Module, To Verify
