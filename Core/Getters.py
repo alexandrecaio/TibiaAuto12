@@ -16,13 +16,13 @@ def GetAccountNamePosition():
     else:
         return 0, 0
 
-
+ 
 def GetBattlePosition():
-    BattlePositions[0], BattlePositions[1] = LocateCenterImage('images/TibiaSettings/BattleList.png', Precision=0.85)
+    BattlePositions[0], BattlePositions[1] = LocateCenterImage('images/TibiaSettings/BattleList1.png', Precision=0.85)
     if BattlePositions[0] == 0 and BattlePositions[1] == 0:
         return 0, 0, 0, 0
     else:
-        BattlePositions[0], BattlePositions[1] = LocateImage('images/TibiaSettings/BattleList.png',
+        BattlePositions[0], BattlePositions[1] = LocateImage('images/TibiaSettings/BattleList1.png',
                                                              Precision=0.85)
         BattlePositions[2] = BattlePositions[0] + 155
         BattlePositions[3] = BattlePositions[1] + 415
@@ -65,6 +65,8 @@ def GetMapPosition():
 
 def GetStatsPosition():
     StatsPositions[0], StatsPositions[1] = LocateImage('images/TibiaSettings/Stop.png', Precision=0.8)
+    StatsPositions[0], StatsPositions[1] = LocateImage('images/TibiaSettings/Stop1.png', Precision=0.8)
+    print("StatsPositions[0]:",StatsPositions[0],"                StatsPositions[1]:",StatsPositions[1])
     if StatsPositions[0] != 0 and StatsPositions[1] != 0:
         StatsPositions[0] = StatsPositions[0] - 117
         StatsPositions[1] = StatsPositions[1] + 1
@@ -76,106 +78,85 @@ def GetStatsPosition():
 
 
 def GetPlayerPosition():
-    print('X Game Window Error... Please Press "c" With Your Mouse On Player Position')
-    import keyboard
-    from Conf.Hotkeys import Hotkey
-    MoveMouse = Hotkey(1)
-    Waiting = True
-    while Waiting:
-        if keyboard.is_pressed("c"):
-            x, y = MoveMouse.Position()
-            Player[0] = x
-            Player[1] = y
-            if GameWindow[0] == 0:
-                GameWindow[0] = 1
-            if GameWindow[1] == 0:
-                GameWindow[1] = 1
-            if GameWindow[2] == 0:
-                GameWindow[2] = 1
-            if GameWindow[3] == 0:
-                GameWindow[3] = 1
-            return x, y, GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[3]
-    '''    LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption1.png", Precision=0.75)
-        if LeftGameWindow[0] == 0 and LeftGameWindow[1] == 0:
-            LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption2.png", Precision=0.75)
+    #print("Run!")
+    LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption1.png", Precision=0.75)
+    if LeftGameWindow[0] == 0 and LeftGameWindow[1] == 0:
+        LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption2.png", Precision=0.75)
 
-        if LeftGameWindow[0] == 0 and LeftGameWindow[1] == 0:
-            LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption3.png", Precision=0.75)
+    if LeftGameWindow[0] == 0 and LeftGameWindow[1] == 0:
+        LeftGameWindow = LocateImage("images/PlayerSettings/LeftOption3.png", Precision=0.75)
 
+    try:
+        GameWindow[0] = int(LeftGameWindow[0])
+        GameWindow[1] = int(LeftGameWindow[1])
+    except Exception as errno:
+        print("?Error On ", errno)
+
+    RightGameWindow = LocateImage("images/PlayerSettings/RightOption1.png", Precision=0.75)
+    if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
+        RightGameWindow = LocateImage("images/PlayerSettings/RightOption2.png", Precision=0.75)
+
+    if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
+        RightGameWindow = LocateImage("images/PlayerSettings/RightOption3.png", Precision=0.75)
+
+    if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
+        RightGameWindow = LocateImage("images/PlayerSettings/RightOption4.png", Precision=0.75)
+    try:
+        GameWindow[2] = int(RightGameWindow[0])
+    except Exception as errno:
+        print("?Error On ", errno)
+
+    ButtomGameWindow = LocateImage("images/PlayerSettings/EndLocation1.png", Precision=0.7)
+    print("ButtomGameWindow(0):", ButtomGameWindow[0], "ButtomGameWindow(1):",ButtomGameWindow[1])
+    if ButtomGameWindow[0] == 0 and ButtomGameWindow[1] == 0:
+        print("BUTTON GAME WINDOWS IS NONE")
+    else:
+        GameWindow[3] = int(ButtomGameWindow[1])
+
+    if GameWindow[0] != 0 and GameWindow[2] != 0:
+        Player[0] = int(((GameWindow[2] - GameWindow[0]) / 2) + GameWindow[0])
+    else:
         try:
-            GameWindow[0] = int(LeftGameWindow[0])
-            GameWindow[1] = int(LeftGameWindow[1])
-        except Exception as errno:
-            print("?Error On ", errno)
+            raise Exception('ex')
+        except Exception as Ex:
+            print('X Game Window Error... Please Press "c" With Your Mouse On Player Position')
+            import keyboard
+            from Conf.Hotkeys import Hotkey
+            MoveMouse = Hotkey(1)
+            Waiting = True
+            while Waiting:
+                if keyboard.is_pressed("c"):
+                    x, y = MoveMouse.Position()
+                    Player[0] = x
+                    Player[1] = y
+                    if GameWindow[0] == 0:
+                        GameWindow[0] = 1
+                    if GameWindow[1] == 0:
+                        GameWindow[1] = 1
+                    if GameWindow[2] == 0:
+                        GameWindow[2] = 1
+                    if GameWindow[3] == 0:
+                        GameWindow[3] = 1
+                    return x, y, GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[3]
 
-        RightGameWindow = LocateImage("images/PlayerSettings/RightOption1.png", Precision=0.75)
-        if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
-            RightGameWindow = LocateImage("images/PlayerSettings/RightOption2.png", Precision=0.75)
-
-        if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
-            RightGameWindow = LocateImage("images/PlayerSettings/RightOption3.png", Precision=0.75)
-
-        if RightGameWindow[0] == 0 and RightGameWindow[1] == 0:
-            RightGameWindow = LocateImage("images/PlayerSettings/RightOption4.png", Precision=0.75)
+    if GameWindow[1] != 0 and GameWindow[3] != 0:
+        Player[1] = int(((GameWindow[3] - GameWindow[1]) / 2) + GameWindow[1])
+    else:
         try:
-            GameWindow[2] = int(RightGameWindow[0])
-        except Exception as errno:
-            print("?Error On ", errno)
+            raise Exception('Y Game Window Error')
+        except Exception as Ex:
+            print(Ex)
+            pass
 
-        ButtomGameWindow = LocateImage("images/PlayerSettings/EndLocation.png", Precision=0.6)
-        if ButtomGameWindow[0] == 0 and ButtomGameWindow[1] == 0:
-            print("BUTTON GAME WINDOWS IS NONE")
-        else:
-            GameWindow[3] = int(ButtomGameWindow[1])
-
-        if GameWindow[0] != 0 and GameWindow[2] != 0:
-            Player[0] = int(((GameWindow[2] - GameWindow[0]) / 2) + GameWindow[0])
-        else:
-            try:
-                raise Exception('ex')
-            except Exception as Ex:
-                print('X Game Window Error... Please Press "c" With Your Mouse On Player Position')
-                import keyboard
-                from Conf.Hotkeys import Hotkey
-                MoveMouse = Hotkey(1)
-                Waiting = True
-                while Waiting:
-                    if keyboard.is_pressed("c"):
-                        x, y = MoveMouse.Position()
-                        Player[0] = x
-                        Player[1] = y
-                        if GameWindow[0] == 0:
-                            GameWindow[0] = 1
-                        if GameWindow[1] == 0:
-                            GameWindow[1] = 1
-                        if GameWindow[2] == 0:
-                            GameWindow[2] = 1
-                        if GameWindow[3] == 0:
-                            GameWindow[3] = 1
-                        return x, y, GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[3]
-
-        if GameWindow[1] != 0 and GameWindow[3] != 0:
-            Player[1] = int(((GameWindow[3] - GameWindow[1]) / 2) + GameWindow[1])
-        else:
-            try:
-                raise Exception('Y Game Window Error')
-            except Exception as Ex:
-                print(Ex)
-                pass
-
-        if Player[1] != 0:
-            return Player[0], Player[1], GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[3]
-        else:
-            print("Error To Get Player Position !!!")
-            return 0, 0, 0, 0, 0, '''
+    if Player[1] != 0:
+        return Player[0], Player[1], GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[3]
+    else:
+        print("Error To Get Player Position !!!")
+        return 0, 0, 0, 0, 0, 0
 
 
 def SetSQMs():
-    SQMsSizes[0] = int((GameWindow[2] - GameWindow[0]) / 15)
-    SQMsSizes[1] = int((GameWindow[3] - GameWindow[1]) / 11)
-    print(f"Size of Your SQM [Width: {SQMsSizes[0]}px, Height: {SQMsSizes[1]}px]")
-    print('')
-    '''if GameWindow[0] and GameWindow[1] != 0:
+    if GameWindow[0] and GameWindow[1] != 0:
         SQMsSizes[0] = int((GameWindow[2] - GameWindow[0]) / 15)
         SQMsSizes[1] = int((GameWindow[3] - GameWindow[1]) / 11)
         print(f"Size of Your SQM [Width: {SQMsSizes[0]}px, Height: {SQMsSizes[1]}px]")
@@ -185,7 +166,7 @@ def SetSQMs():
         print('')
         Player[0], Player[1], GameWindow[0], GameWindow[1], GameWindow[2], GameWindow[
             3] = GetPlayerPosition()
-        SetSQMs()'''
+        SetSQMs()
     if Player[0] and Player[1] != 0 and SQMsSizes[0] and SQMsSizes[1] != 0:
         SQMs[0] = Player[0] - SQMsSizes[0]
         SQMs[1] = Player[1] + SQMsSizes[1]
