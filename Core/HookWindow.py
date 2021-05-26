@@ -176,7 +176,6 @@ def LocateRgbImage(image, Region=None, Precision=0.8):
 
 def LocateCenterImage(image, Region=None, Precision=0.8):
     TakedImage = TakeImage(Region)
-
     img_rgb = np.array(TakedImage)
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(image, 0)

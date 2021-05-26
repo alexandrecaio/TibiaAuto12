@@ -5,6 +5,7 @@ import ctypes.wintypes
 import win32gui
 import win32api
 import win32con
+import pyautogui
 
 from Conf.HexMapKeys import KeyToHex
 
@@ -64,6 +65,9 @@ class MoveMouse:
         self.DLL.SetCursorPos(X, Y + 24)
 
     def DragTo(self, From, To):
+        self.DLL.SetCursorPos(From[0], From[1] + 24)
+        pyautogui.dragTo(To[0], To[1] + 24, 0.5, button='left')
+        '''
         ClientFrom = win32gui.ScreenToClient(self.HWND, From)
         FromPosition = win32api.MAKELONG(ClientFrom[0], ClientFrom[1])
         ClientTo = win32gui.ScreenToClient(self.HWND, To)
@@ -71,6 +75,7 @@ class MoveMouse:
         win32api.SendMessage(self.HWND, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, FromPosition)
         win32api.SendMessage(self.HWND, win32con.WM_MOUSEMOVE, 0, ToPosition)
         win32api.SendMessage(self.HWND, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, ToPosition)
+        '''
         '''        print("isThis??????")
         self.DLL.SetCursorPos(From[0], From[1])
         self.DLL.mouse_event(self.MOUSEEVENTF_LEFTDOWN, ctypes.c_long(From[0]), ctypes.c_long(From[1] + 24), 0, 0)

@@ -143,6 +143,7 @@ Stats = [
 Monsters = [
     "Rat",
     "Goblin",
+    "Dragon",
     "CaveRat",
     "Orc",
     "OrcWarrior",

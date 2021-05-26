@@ -108,10 +108,8 @@ class ChooseConfig:
 
                 time.sleep(.5)
                 time.sleep(.5)
-
                 try:
                     HealthLocation = GetHealthPosition()
-                    print('')
                     print(f"Health Location [X: {HealthLocation[0]} Y: {HealthLocation[1]}]")
                     data['Positions']['LifePosition'][0]['x'] = HealthLocation[0]
                     data['Positions']['LifePosition'][0]['y'] = HealthLocation[1]
@@ -127,7 +125,6 @@ class ChooseConfig:
                     NumberOfExcepts.append("LifePosition")
 
                     pass
-
                 try:
                     ManaLocation = GetManaPosition()
                     print('')
@@ -147,7 +144,6 @@ class ChooseConfig:
                     NumberOfExcepts.append("ManaPosition")
 
                     pass
-
                 try:
                     BattlePositions[0], BattlePositions[1], BattlePositions[2], BattlePositions[3] = GetBattlePosition()
                     if BattlePositions[0] and BattlePositions[1] and BattlePositions[2] and BattlePositions[3] != 0:
@@ -174,7 +170,6 @@ class ChooseConfig:
                     NumberOfExcepts.append("BattlePosition")
 
                     pass
-
                 try:
                     StatsPositions[0], StatsPositions[1], StatsPositions[2], StatsPositions[3] = GetStatsPosition()
                     print('')
@@ -249,7 +244,7 @@ class ChooseConfig:
 
                     pass
 
-                try:
+                try:    
                     MapPositions[0], MapPositions[1], MapPositions[2], MapPositions[3] = GetMapPosition()
                     time.sleep(.2)
                     data['Boxes']['MapBox'][0]['x'] = int(MapPositions[0])
