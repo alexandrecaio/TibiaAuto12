@@ -8,7 +8,7 @@ from Core.HookWindow import LocateCenterImage, LocateRgbImage
 import cv2
 import numpy as np
 #FIM MODULARIZACAO
-from Engine.CaveBot.Scanners import NumberOfTargets, ScanTarget, IsAttacking, NeedFollow, CheckWaypoint
+from Engine.CaveBot.Scanners import NumberOfTargets, ScanTarget, IsAttacking, NeedFollow, CheckWaypoint, ScanTarget1
 
 TargetNumber = 0
 NumberOfMonster = []
@@ -27,7 +27,7 @@ class CaveBotController:
         self.MapPosition = MapPosition
         self.BattlePosition = BattlePosition
         self.SQMs = SQMs
-        self.Target = []
+        self.Target = []    
 
         # Remember Set For Get From Cavebot (for me)
 
@@ -67,14 +67,18 @@ class CaveBotController:
         # region Walk
 
         if self.EnabledWalk:
-            while MarkLocation[0] == 0 and MarkLocation[1] == 0:
-                MarkLocation[0], MarkLocation[1] = LocateCenterImage('images/MapSettings/' + data[i]["mark"] + '.png',
-                                                 Region=(
-                                                     self.MapPosition[0], self.MapPosition[1], self.MapPosition[2],
-                                                     self.MapPosition[3]),
-                                                 Precision=0.8)
+            canpass = 0
+            flag_canpass = True
+            print("Box of region [0]:",self.MapPosition[0], "[1]:", self.MapPosition[1] ,"[2]:", self.MapPosition[2] ,"[3]:",
+                                                     self.MapPosition[3])
+            while MarkLocation[0] == 0 and MarkLocation[1] == 0 and canpass<15:
+                MarkLocation[0], MarkLocation[1] = LocateCenterImage('images/MapSettings/' + data[i]["mark"] + '.png',Region=(
+                                                     
+                                                     1700, 30, 1840,
+                                                     175),Precision=0.60)
+                canpass = canpass+1
                 if MarkLocation[0] == 0 and MarkLocation[1] == 0:
-                    print("Mark: { ", data[i]["mark"], " } Not Located, Try Again")
+                    print("Mark: { ", data[i]["mark"], " } Not Located, Try Again!!!")
                     if self.WalkForRefresh:
                         sleep(.3)
                         self.SendToClient.Press('up_arrow')
@@ -84,20 +88,25 @@ class CaveBotController:
                         self.SendToClient.Press('down_arrow')
                         sleep(.1)
                         self.SendToClient.Press('right_arrow')
-                        sleep(.1)
+                        sleep(4)
                 else:
-                    print("successfully Located The Mark: { ", data[i]["mark"], " } Clicking On Your Position")
-                    MarkLocation[0] = self.MapPosition[0] + MarkLocation[0]
-                    MarkLocation[1] = self.MapPosition[1] + MarkLocation[1]
-
+                    print("X:",MarkLocation[0]," | Y:",MarkLocation[1],"successfully Located The Mark: { ", data[i]["mark"], " } Clicking On Your Position")
+                    MarkLocation[0] = 1700+ MarkLocation[0] + 3
+                    MarkLocation[1] = 30+ MarkLocation[1] + 2
+                
             # Clicking In Mark Position
 
             if self.MOUSE_OPTION == 1:
                 PastPosition = self.SendToClient.Position()
             else:
                 PastPosition = [0, 0]
-
-            self.SendToClient.LeftClick(MarkLocation[0], MarkLocation[1])
+            #print("Clicking on check...")
+            #self.SendToClient.MoveTo(MarkLocation[0], MarkLocation[1])
+            #sleep(3)
+            #print("Mouse moved to ",self.SendToClient.Position())
+            #sleep(5)
+            if (MarkLocation[0]!=0 and MarkLocation[1]!=0):
+                self.SendToClient.LeftClick(MarkLocation[0], MarkLocation[1])
 
             if self.MOUSE_OPTION == 1:
                 self.SendToClient.MoveTo(PastPosition[0], PastPosition[1])
@@ -105,105 +114,41 @@ class CaveBotController:
         # endregion
 
         '''
-        The Attack, Is Every Time Enabled.
+        The Attack, Is Every Time Enabled.s
         '''
 
         # region Attack
 
         for Monster in Monsters:
+            entrou=False
 
             FirstMonstersNumber = 0
             SecondMonstersNumber = 0
 
-            Number = NumberOfTargets(self.BattlePosition, Monster)
+            #Number = NumberOfTargets(self.BattlePosition, Monster)
             # NumberOfMonster.append(Number)
+            #self.Target = ScanTarget1(Monster)
+            self.Target = LocateCenterImage('images/Targets/Names/' + Monster + '.png',Region=(
+                                                     
+                                                     1610, 15, 1900,
+                                                     935),Precision=0.7)
+            
+            while (self.Target[0] != 0 and self.Target[1] != 0):
+                entrou = True
+                self.SendToClient.LeftClick(1610+self.Target[0], self.Target[1]+15)
+                sleep(0.68)
+                self.Target = LocateCenterImage('images/Targets/Names/' + Monster + '.png',Region=(
+                                                    1610, 15, 1850,
+                                                    935),Precision=0.7)
+            if (entrou):
+                self.TakeLoot()
+            
+            self.SendToClient.Press('F7')
+            sleep(.6)
+            self.SendToClient.Press('F6')
+            
 
-            while Number > 0:
-
-                if not IsEnable():
-                    return
-
-                self.Target = ScanTarget(self.BattlePosition, Monster)
-
-                if self.Target[0] != 0 and self.Target[1] != 0:
-
-                    # Verify If You Are Already Attacking !
-                    if IsAttacking(self.BattlePosition):
-                        print("Attacking The Target")
-
-                        if self.MOUSE_OPTION == 1:
-                            PastPosition = self.SendToClient.Position()
-                        else:
-                            PastPosition = [0, 0]
-
-                        self.SendToClient.LeftClick(self.Target[0], self.Target[1])
-
-                        if self.MOUSE_OPTION == 1:
-                            self.SendToClient.MoveTo(PastPosition[0], PastPosition[1])
-
-                        FirstMonstersNumber = NumberOfTargets(self.BattlePosition, Monster)
-                    else:
-                        print("You are attacking")
-                        FirstMonstersNumber = NumberOfTargets(self.BattlePosition, Monster)
-
-                # Control Follow Mode In Attack (Follow Or Idle)
-
-                if self.FollowMode:
-
-                    IsNeedFollow = NeedFollow()
-
-                    if IsNeedFollow:
-                        print("Clicking In Follow")
-
-                        if self.MOUSE_OPTION == 1:
-                            PastPosition = self.SendToClient.Position()
-                        else:
-                            PastPosition = [0, 0]
-                        FollowPosition = LocateCenterImage('images/TibiaSettings/NotFollow.png', Precision=0.7)
-                        self.SendToClient.LeftClick(FollowPosition[0], FollowPosition[1])
-                        if self.MOUSE_OPTION == 1:
-                            self.SendToClient.MoveTo(PastPosition[0], PastPosition[1])
-
-                sleep(.2)
-
-                self.Target = ScanTarget(self.BattlePosition, Monster)
-
-                if self.Target[0] != 0 and self.Target[1] != 0:
-
-                    # Verify If You Are Already Attacking !
-                    if IsAttacking(self.BattlePosition):
-                        # For Debugging
-                        # print("Attacking The Target2")
-
-                        if self.MOUSE_OPTION == 1:
-                            PastPosition = self.SendToClient.Position()
-                        else:
-                            PastPosition = [0, 0]
-
-                        self.SendToClient.LeftClick(self.Target[0], self.Target[1])
-
-                        if self.MOUSE_OPTION == 1:
-                            self.SendToClient.MoveTo(PastPosition[0], PastPosition[1])
-
-                        SecondMonstersNumber = NumberOfTargets(self.BattlePosition, Monster)
-                    else:
-                        # For Debugging
-                        # print("You are attacking2")
-
-                        SecondMonstersNumber = NumberOfTargets(self.BattlePosition, Monster)
-
-                if SecondMonstersNumber < FirstMonstersNumber:
-                    self.TakeLoot()
-
-                self.Target = []
-
-                sleep(0.2)
-
-                Number = NumberOfTargets(self.BattlePosition, Monster)
-
-                if Number == 0:
-                    break
-
+            #Deve clicar no ultimo checkpoint
         '''
             If Walk Option Is Enabled, It Verify If The Player Already
             Arrived To The Current Mark.
@@ -211,6 +156,8 @@ class CaveBotController:
             If Already Arrived, It Set On Script, The Current Mark As False
             And The Next Mark As True, For The Next Check.
         '''
+        if (MarkLocation[0]!=0 and MarkLocation[1]!=0):
+                self.SendToClient.LeftClick(MarkLocation[0], MarkLocation[1])
 
         if self.EnabledWalk:
             if CheckWaypoint(data[i]["mark"], self.MapPosition):
@@ -280,21 +227,21 @@ class CaveBotController:
                 if i==1:
                     self.SendToClient.RightClick(806, 535)
                 elif i==2:
-                    self.SendToClient.RightClick(874, 540)
+                    self.SendToClient.RightClick(874, 530)
                 elif i==3:
-                    self.SendToClient.RightClick(950, 535)
+                    self.SendToClient.RightClick(938, 535)
                 elif i==4:
                     self.SendToClient.RightClick(790, 470)
                 elif i==5:
-                    self.SendToClient.RightClick(870, 482)
+                    self.SendToClient.RightClick(870, 470)
                 elif i==6:
-                    self.SendToClient.RightClick(930, 480)
+                    self.SendToClient.RightClick(930, 470)
                 elif i==7:
                     self.SendToClient.RightClick(782, 400)
                 elif i==8:
                     self.SendToClient.RightClick(867, 400)
                 elif i==9:
-                    self.SendToClient.RightClick(949, 400)
+                    self.SendToClient.RightClick(939, 400)
                 #else:
                 #    nome = None
                 #    print "Valor invalido"
@@ -302,8 +249,8 @@ class CaveBotController:
                 #
                 #self.SendToClient.RightClick(self.SQMs[i]-90, self.SQMs[j])
                 sleep(.17)
-            elif self.LootButton == 'left':
-                self.SendToClient.LeftClick(self.SQMs[i], self.SQMs[j])
+            #elif self.LootButton == 'left':
+            #    self.SendToClient.LeftClick(self.SQMs[i], self.SQMs[j])
 
         # For Debugging
         # EndLootTime = time() - StartLootTime
@@ -355,6 +302,7 @@ class CaveBotController:
             img_rgb = img.copy()
             for pt in zip(*loc[::-1]):
                 cv2.rectangle(img_rgb, pt, (pt[0] + 100, pt[1] + 100), (0,0,255), 2)
+                
             ''' 
             if (wpt[0]!=0 and wpt[1]!= 0 ):
                 #self.SendToClient.MoveTo(1739+wpt[0]+18,950+wpt[1]+15)

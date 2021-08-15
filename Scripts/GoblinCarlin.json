@@ -2,15 +2,10 @@
     {
         "mark": "CheckMark",
         "type": 1,
-        "status": true
-    },
-    {
-        "mark": "Lock",
-        "type": 1,
         "status": false
     },
     {
-        "mark": "Cross",
+        "mark": "ExclimationMark",
         "type": 1,
         "status": false
     },
@@ -20,7 +15,12 @@
         "status": false
     },
     {
-        "mark": "Skull",
+        "mark": "Sword",
+        "type": 1,
+        "status": true
+    },
+    {
+        "mark": "Flag",
         "type": 1,
         "status": false
     }
